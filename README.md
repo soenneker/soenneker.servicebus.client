@@ -8,5 +8,5 @@
 ## Installation
 
 ```
-Install-Package Soenneker.ServiceBus.Client
+dotnet add package Soenneker.ServiceBus.Client
 ```
