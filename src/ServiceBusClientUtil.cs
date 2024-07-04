@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Configuration;
+using Soenneker.Extensions.Configuration;
 using Soenneker.ServiceBus.Client.Abstract;
 using Soenneker.Utils.AsyncSingleton;
 
@@ -16,10 +18,7 @@ public class ServiceBusClientUtil : IServiceBusClientUtil
     {
         _client = new AsyncSingleton<ServiceBusClient>(() =>
         {
-            var serviceBusConnString = config.GetValue<string>("Azure:ServiceBus:ConnectionString");
-
-            if (serviceBusConnString == null)
-                throw new Exception("Azure:ServiceBus:ConnectionString is required");
+            var serviceBusConnString = config.GetValueStrict<string>("Azure:ServiceBus:ConnectionString");
 
             var client = new ServiceBusClient(serviceBusConnString);
 
@@ -27,9 +26,9 @@ public class ServiceBusClientUtil : IServiceBusClientUtil
         });
     }
 
-    public ValueTask<ServiceBusClient> GetClient()
+    public ValueTask<ServiceBusClient> GetClient(CancellationToken cancellationToken = default)
     {
-        return _client.Get();
+        return _client.Get(cancellationToken);
     }
 
     public ValueTask DisposeAsync()

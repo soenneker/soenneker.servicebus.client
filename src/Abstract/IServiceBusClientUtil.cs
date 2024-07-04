@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.Contracts;
+using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 
@@ -15,5 +16,5 @@ public interface IServiceBusClientUtil : IDisposable, IAsyncDisposable
     /// Lets try to pass all service bus traffic over this one client
     /// </summary>
     [Pure]
-    ValueTask<ServiceBusClient> GetClient();
+    ValueTask<ServiceBusClient> GetClient(CancellationToken cancellationToken = default);
 }
