@@ -26,7 +26,7 @@ public class ServiceBusClientUtil : IServiceBusClientUtil
         });
     }
 
-    public ValueTask<ServiceBusClient> GetClient(CancellationToken cancellationToken = default)
+    public ValueTask<ServiceBusClient> Get(CancellationToken cancellationToken = default)
     {
         return _client.Get(cancellationToken);
     }

@@ -16,5 +16,5 @@ public interface IServiceBusClientUtil : IDisposable, IAsyncDisposable
     /// Lets try to pass all service bus traffic over this one client
     /// </summary>
     [Pure]
-    ValueTask<ServiceBusClient> GetClient(CancellationToken cancellationToken = default);
+    ValueTask<ServiceBusClient> Get(CancellationToken cancellationToken = default);
 }
