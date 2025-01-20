@@ -9,13 +9,17 @@ namespace Soenneker.ServiceBus.Client.Registrars;
 /// </summary>
 public static class ServiceBusClientUtilRegistrar
 {
-    public static void AddServiceBusClientUtilAsSingleton(this IServiceCollection services)
+    public static IServiceCollection AddServiceBusClientUtilAsSingleton(this IServiceCollection services)
     {
         services.TryAddSingleton<IServiceBusClientUtil, ServiceBusClientUtil>();
+
+        return services;
     }
 
-    public static void AddServiceBusClientUtilAsScoped(this IServiceCollection services)
+    public static IServiceCollection AddServiceBusClientUtilAsScoped(this IServiceCollection services)
     {
         services.TryAddScoped<IServiceBusClientUtil, ServiceBusClientUtil>();
+
+        return services;
     }
 }
