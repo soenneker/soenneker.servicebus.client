@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Configuration;
@@ -11,7 +10,7 @@ using Soenneker.Utils.AsyncSingleton;
 namespace Soenneker.ServiceBus.Client;
 
 ///<inheritdoc cref="IServiceBusClientUtil"/>
-public class ServiceBusClientUtil : IServiceBusClientUtil
+public sealed class ServiceBusClientUtil : IServiceBusClientUtil
 {
     private readonly AsyncSingleton<ServiceBusClient> _client;
 
@@ -34,15 +33,11 @@ public class ServiceBusClientUtil : IServiceBusClientUtil
 
     public ValueTask DisposeAsync()
     {
-        GC.SuppressFinalize(this);
-
         return _client.DisposeAsync();
     }
 
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
-
         _client.Dispose();
     }
 }
