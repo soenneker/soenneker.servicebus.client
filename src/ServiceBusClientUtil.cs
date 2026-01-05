@@ -12,32 +12,30 @@ namespace Soenneker.ServiceBus.Client;
 ///<inheritdoc cref="IServiceBusClientUtil"/>
 public sealed class ServiceBusClientUtil : IServiceBusClientUtil
 {
+    private readonly ILogger<ServiceBusClientUtil> _logger;
+    private readonly string _serviceBusConnString;
+
     private readonly AsyncSingleton<ServiceBusClient> _client;
 
     public ServiceBusClientUtil(IConfiguration config, ILogger<ServiceBusClientUtil> logger)
     {
-        _client = new AsyncSingleton<ServiceBusClient>(() =>
-        {
-            var serviceBusConnString = config.GetValueStrict<string>("Azure:ServiceBus:ConnectionString");
+        _logger = logger;
+        _serviceBusConnString = config.GetValueStrict<string>("Azure:ServiceBus:ConnectionString");
 
-            logger.LogDebug("Initializing Service Bus client...");
-
-            return new ServiceBusClient(serviceBusConnString);
-        });
+        // No closure: method group
+        _client = new AsyncSingleton<ServiceBusClient>(CreateClient);
     }
 
-    public ValueTask<ServiceBusClient> Get(CancellationToken cancellationToken = default)
+    private ValueTask<ServiceBusClient> CreateClient(CancellationToken token)
     {
-        return _client.Get(cancellationToken);
+        _logger.LogDebug("Initializing Service Bus client...");
+        return ValueTask.FromResult(new ServiceBusClient(_serviceBusConnString));
     }
 
-    public ValueTask DisposeAsync()
-    {
-        return _client.DisposeAsync();
-    }
+    public ValueTask<ServiceBusClient> Get(CancellationToken cancellationToken = default) =>
+        _client.Get(cancellationToken);
 
-    public void Dispose()
-    {
-        _client.Dispose();
-    }
+    public ValueTask DisposeAsync() => _client.DisposeAsync();
+
+    public void Dispose() => _client.Dispose();
 }
