@@ -41,6 +41,6 @@
     <ItemGroup>
         <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
         <PackageReference Include="Soenneker.Extensions.Configuration" Version="4.0.761" />
-        <PackageReference Include="Soenneker.Utils.AsyncSingleton" Version="4.0.745" />
+        <PackageReference Include="Soenneker.Utils.AsyncSingleton" Version="4.0.746" />
     </ItemGroup>
 </Project>
