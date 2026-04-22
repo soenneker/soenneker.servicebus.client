@@ -1,20 +1,19 @@
 using Soenneker.ServiceBus.Client.Abstract;
-using Soenneker.Tests.FixturedUnit;
-using Xunit;
+using Soenneker.Tests.HostedUnit;
 
 namespace Soenneker.ServiceBus.Client.Tests;
 
-[Collection("Collection")]
-public class ServiceBusClientUtilTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public class ServiceBusClientUtilTests : HostedUnitTest
 {
     private readonly IServiceBusClientUtil _util;
 
-    public ServiceBusClientUtilTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public ServiceBusClientUtilTests(Host host) : base(host)
     {
         _util = Resolve<IServiceBusClientUtil>(true);
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
