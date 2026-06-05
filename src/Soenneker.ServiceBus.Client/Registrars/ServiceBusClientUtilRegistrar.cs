@@ -9,6 +9,11 @@ namespace Soenneker.ServiceBus.Client.Registrars;
 /// </summary>
 public static class ServiceBusClientUtilRegistrar
 {
+    /// <summary>
+    /// Adds service bus client util as singleton.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The result of the operation.</returns>
     public static IServiceCollection AddServiceBusClientUtilAsSingleton(this IServiceCollection services)
     {
         services.TryAddSingleton<IServiceBusClientUtil, ServiceBusClientUtil>();
@@ -16,6 +21,11 @@ public static class ServiceBusClientUtilRegistrar
         return services;
     }
 
+    /// <summary>
+    /// Adds service bus client util as scoped.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The result of the operation.</returns>
     public static IServiceCollection AddServiceBusClientUtilAsScoped(this IServiceCollection services)
     {
         services.TryAddScoped<IServiceBusClientUtil, ServiceBusClientUtil>();
