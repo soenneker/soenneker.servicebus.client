@@ -9,7 +9,7 @@ using Soenneker.Utils.AsyncSingleton;
 
 namespace Soenneker.ServiceBus.Client;
 
-///<inheritdoc cref="IServiceBusClientUtil"/>
+/// <inheritdoc cref="IServiceBusClientUtil"/>
 public sealed class ServiceBusClientUtil : IServiceBusClientUtil
 {
     private readonly ILogger<ServiceBusClientUtil> _logger;
