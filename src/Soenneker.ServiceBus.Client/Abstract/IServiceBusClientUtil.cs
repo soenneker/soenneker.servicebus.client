@@ -7,13 +7,12 @@ using Azure.Messaging.ServiceBus;
 namespace Soenneker.ServiceBus.Client.Abstract;
 
 /// <summary>
-/// A utility library for Azure Service Bus client accessibility <para/>
-/// Singleton IoC
+/// Provides lazy access to an Azure Service Bus client configured from <c>Azure:ServiceBus:ConnectionString</c>.
 /// </summary>
 public interface IServiceBusClientUtil : IDisposable, IAsyncDisposable
 {
     /// <summary>
-    /// Lets try to pass all service bus traffic over this one client
+    /// Gets the lazily initialized client. The returned client is owned by this service and should not be disposed by the caller.
     /// </summary>
     /// <param name="cancellationToken">Token used to cancel the operation.</param>
     /// <returns>A task whose result is the requested service Bus Client.</returns>

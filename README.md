@@ -5,42 +5,70 @@
 
 # Soenneker.ServiceBus.Client
 
-A utility library for Azure Service Bus client accessibility Singleton IoC.
+A lazily initialized, dependency-injection-friendly Azure `ServiceBusClient`.
 
-## Install
+## Installation
 
 ```bash
 dotnet add package Soenneker.ServiceBus.Client
 ```
 
-## Quick start
+## Configuration
+
+Provide the Service Bus connection string at `Azure:ServiceBus:ConnectionString`:
+
+```json
+{
+  "Azure": {
+    "ServiceBus": {
+      "ConnectionString": "Endpoint=sb://..."
+    }
+  }
+}
+```
+
+Store the connection string in a protected configuration provider. The credential needs the data-plane permissions required by the senders, receivers, or processors created from the client.
+
+## Registration
+
+Use a singleton for the normal Azure SDK client reuse model:
 
 ```csharp
 using Soenneker.ServiceBus.Client.Registrars;
-using Microsoft.Extensions.DependencyInjection;
 
-var services = new ServiceCollection();
-var result = services.AddServiceBusClientUtilAsSingleton();
+services.AddServiceBusClientUtilAsSingleton();
 ```
 
-Registers Service Bus Client Util with a singleton lifetime.
+`AddServiceBusClientUtilAsScoped()` creates one utility—and therefore one lazily created `ServiceBusClient`—per DI scope. Use it only when that isolation is intentional.
 
-## What you get
+## Usage
 
-- `IServiceBusClientUtil` — A utility library for Azure Service Bus client accessibility Singleton IoC.
-- `ServiceBusClientUtilRegistrar` — A utility library for Azure Service Bus client accessibility.
+Inject `IServiceBusClientUtil`, get the shared client, and create Azure SDK child clients from it:
 
-## API at a glance
+```csharp
+using Azure.Messaging.ServiceBus;
+using Soenneker.ServiceBus.Client.Abstract;
 
-| API | What it does | Result / important behavior |
-| --- | --- | --- |
-| `IServiceBusClientUtil.Get(cancellationToken)` | Lets try to pass all service bus traffic over this one client. | A task whose result is the requested service Bus Client. |
-| `ServiceBusClientUtilRegistrar.AddServiceBusClientUtilAsSingleton(services)` | Registers Service Bus Client Util with a singleton lifetime. | The same service collection, so additional registrations can be chained. |
-| `ServiceBusClientUtilRegistrar.AddServiceBusClientUtilAsScoped(services)` | Registers Service Bus Client Util with a scoped lifetime. | The same service collection, so additional registrations can be chained. |
+public sealed class OrderPublisher(IServiceBusClientUtil clientUtil)
+{
+    public async Task Send(string json, CancellationToken cancellationToken)
+    {
+        ServiceBusClient client = await clientUtil.Get(cancellationToken);
 
-## Practical notes
+        await using ServiceBusSender sender = client.CreateSender("orders");
 
-- Cancellation stops pending work; it does not undo work that has already completed.
-- Reuse the registered client instead of constructing one per operation.
-- Calls that return a cached or singleton value reuse the same instance until the owning service is disposed.
-- Dispose instances you own when their scope ends so held resources can be released.
+        var message = new ServiceBusMessage(BinaryData.FromString(json))
+        {
+            ContentType = "application/json"
+        };
+
+        await sender.SendMessageAsync(message, cancellationToken);
+    }
+}
+```
+
+The utility only creates and owns the top-level `ServiceBusClient`. It does not cache senders, receivers, sessions, or processors.
+
+Do not dispose the client returned by `Get`; the utility and DI container own it. Dispose child clients you create, such as `ServiceBusSender`, `ServiceBusReceiver`, and `ServiceBusProcessor`, according to the Azure SDK lifecycle for your application.
+
+The client is initialized on the first `Get` call and reused for the utility's lifetime. Cancellation can stop initialization while it is pending; it does not create a separate client for that caller.
