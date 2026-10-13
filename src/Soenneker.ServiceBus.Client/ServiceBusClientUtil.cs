@@ -19,7 +19,7 @@ public sealed class ServiceBusClientUtil : IServiceBusClientUtil
     public ServiceBusClientUtil(IConfiguration config, ILogger<ServiceBusClientUtil> logger)
     {
         _logger = logger;
-        _serviceBusConnString = config.GetValueStrict<string>("Azure:ServiceBus:ConnectionString");
+        _serviceBusConnString = config.GetStringStrict("Azure:ServiceBus:ConnectionString");
 
         // No closure: method group
         _client = new AsyncSingleton<ServiceBusClient>(CreateClient);
